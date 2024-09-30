@@ -16,5 +16,13 @@ class UnauthenticatedError extends Error {
 	}
 }
 
+class UnauthorizedError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "UnauthorizedError";
+		this.statusCode = StatusCodes.FORBIDDEN;
+	}
+}
+
 // Exportation de la classe "UnauthenticatedError" pour qu'elle soit utilisable dans d'autres fichiers
-export { UnauthenticatedError };
+export { UnauthenticatedError, UnauthorizedError };

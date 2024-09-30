@@ -3,27 +3,41 @@ import { StatusCodes } from "http-status-codes";
 // Importation de la bibliothèque de validation de schémas Zod
 import { z } from "zod";
 
-// Fonction de validation qui prend un schéma Zod comme argument
-const validate = (schema) => (req, res, next) => {
-	// Bloc try-catch pour gérer les erreurs de validation
-	try {
-		// Validation du corps de la requête en utilisant le schéma Zod
-		const parsedBody = schema.parse(req.body);
-		// Si la validation réussit, on remplace le corps de la requête par le corps validé
-		req.body = parsedBody;
-		// Passe au middleware suivant
-		next();
-	} catch (error) {
-		// Vérifie si l'erreur est une erreur de validation Zod
-		if (error instanceof z.ZodError) {
-			// En cas d'erreur de validation, on renvoie une réponse avec le statut BAD_REQUEST
-			// et les détails des erreurs de validation
-			res.status(StatusCodes.BAD_REQUEST).json({ errors: error.errors });
+// Fonction de validation qui prend en paramètres un schéma de corps (bodySchema)
+// et un schéma de paramètres (paramsSchema).
+const validate =
+	({ bodySchema, paramsSchema }) =>
+	(req, res, next) => {
+		try {
+			// Vérifie si un schéma de validation du corps est fourni.
+			if (bodySchema) {
+				// Parse le corps de la requête avec le schéma fourni.
+				const parsedBody = bodySchema.parse(req.body);
+				// Remplace le corps de la requête par le corps validé.
+				req.body = parsedBody;
+			}
+
+			// Vérifie si un schéma de validation des paramètres est fourni.
+			if (paramsSchema) {
+				// Parse les paramètres de la requête avec le schéma fourni.
+				const parsedParams = paramsSchema.parse(req.params);
+				// Remplace les paramètres de la requête par les paramètres validés.
+				req.params = parsedParams;
+			}
+
+			// Passe au middleware suivant si tout est valide.
+			next();
+		} catch (error) {
+			// Si une erreur de validation est levée (ZodError), on renvoie un statut 400.
+			if (error instanceof z.ZodError) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ errors: error.errors });
+			}
+			// Dans tous les autres cas d'erreur, passe l'erreur au middleware d'erreur suivant.
+			next(error);
 		}
-		// Si l'erreur n'est pas une erreur de validation Zod, elle est transmise au middleware d'erreur
-		next(error);
-	}
-};
+	};
 
 // Exportation de la fonction de validation
 export default validate;

@@ -1,7 +1,7 @@
 import { UnauthenticatedError } from "../errors/index.js";
-import jwt from "jsonwebtoken";
+import { verifyJWT } from "../utils/token.utils.js";
 
-const authenticateUser = (req, res, next) => {
+const authenticateUser = (req, _res, next) => {
 	const authHeader = req.headers.authorization;
 
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -15,7 +15,7 @@ const authenticateUser = (req, res, next) => {
 	}
 
 	try {
-		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+		const decodedToken = verifyJWT(token);
 		req.user = { userId: decodedToken.userId };
 		next();
 	} catch (error) {
