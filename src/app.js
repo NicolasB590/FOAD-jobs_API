@@ -25,6 +25,8 @@ import errorHandler from "./middlewares/error-handler.js";
 // Importation du middleware pour gérer les routes non trouvées
 import notFound from "./middlewares/not-found.middleware.js";
 
+import "dotenv/config";
+
 const swaggerDocument = YAML.load("./swagger.yaml");
 
 // Création d'une instance de l'application Express
