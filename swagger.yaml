@@ -3,7 +3,7 @@ info:
   title: 03-Jobs-API
   version: 1.0.0
 servers:
-  - url: http://localhost:5000/api/v1
+  - url: https://foad-jobs-api.onrender.com/api/v1
 components:
   securitySchemes:
     bearerAuth:
